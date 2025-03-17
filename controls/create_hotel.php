@@ -4,12 +4,13 @@ header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+header('Content-Type: application/json');
 
 include_once '../connection/database.php';
 include_once '../class/Hotel.php';
-include_once '../connection/connections.php'
+include_once '../connection/connections.php';
 
-cors();
+$corsHandler->handleCors();
 
 $database = new Database();
 $db = $database->getConnection();
