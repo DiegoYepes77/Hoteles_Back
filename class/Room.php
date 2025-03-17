@@ -74,9 +74,17 @@ public function validateHotelCapacity() {
         $hotel_capacity = (int)$row['hotel_capacity'];
         $current_rooms = (int)$row['total_rooms'];
         
-        return $current_rooms < $hotel_capacity;
+        return (object)[
+            'ok' => $current_rooms < $hotel_capacity,
+            'msg' => $current_rooms < $hotel_capacity ? 
+                "Room capacity available" : 
+                "Hotel has reached maximum capacity of {$hotel_capacity} rooms"
+        ];
     }
-    return false;
+    return (object)[
+        'ok' => false,
+        'msg' => "Hotel not found or invalid capacity"
+    ];
 }
 
 public function validateUniqueRoomType() {
@@ -95,7 +103,12 @@ public function validateUniqueRoomType() {
     $stmt->execute();
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     
-    return ($row['count'] == 0);
+    return (object)[
+        'ok' => $row['count'] == 0,
+        'msg' => $row['count'] == 0 ? 
+            "Room type combination is unique" : 
+            "This room type and accommodation combination already exists"
+    ];
 }
 
 }

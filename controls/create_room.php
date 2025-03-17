@@ -4,12 +4,13 @@ header("Content-Type: application/json; charset=UTF-8");
 header("Access-Control-Allow-Methods: POST");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+header('Content-Type: application/json');
 
 include_once '../connection/database.php';
 include_once '../class/Room.php';
-include_once '../connection/connections.php'
+include_once '../connection/connections.php';
 
-cors();
+$corsHandler->handleCors();
 
 $database = new Database();
 $db = $database->getConnection();
@@ -35,15 +36,17 @@ if(
     $room->capacidad = $data->capacidad;
     $room->descripcion = isset($data->descripcion) ? $data->descripcion : "";
 
-    if(!$room->validateHotelCapacity()) {
+    $capacityCheck = $room->validateHotelCapacity();
+    if(!$capacityCheck->ok) {
         http_response_code(400);
-        echo json_encode(array("message" => "Unable to create room. Hotel has reached its maximum capacity."));
+        echo json_encode(array("message" => $capacityCheck->msg));
         exit();
     }
 
-    if(!$room->validateUniqueRoomType()) {
+    $uniqueCheck = $room->validateUniqueRoomType();
+    if(!$uniqueCheck->ok) {
         http_response_code(400);
-        echo json_encode(array("message" => "Unable to create room. This room type and accommodation combination already exists for this hotel."));
+        echo json_encode(array("message" => $uniqueCheck->msg));
         exit();
     }
 
